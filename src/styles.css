@@ -1,0 +1,19 @@
+/* styles.css */
+body {
+    font-family: 'Roboto', 'Kanit', sans-serif; /* Usa las fuentes que has agregado */
+    font-size: 16px; /* Cambia el tamaño de la fuente */
+    line-height: 1.5; /* Espaciado de línea */
+    margin: 0; /* Eliminar margenes por defecto */
+    padding: 0; /* Eliminar padding por defecto */
+    background-color: #fff; /* Color de fondo opcional */
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Kanit', serif; /* Cambia la fuente para los encabezados */
+    color: #333; /* Color del texto de los encabezados */
+}
+
+p {
+    color: #666; /* Color del texto de los párrafos */
+    margin: 0 0 1em; /* Margen inferior en los párrafos */
+}
