@@ -11,11 +11,13 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import AccessibilityNewIcon from '@mui/icons-material/AccessibilityNew';
 import HomeIcon from '@mui/icons-material/Home';
 import LogoutIcon from '@mui/icons-material/Logout';
-import logo from '../../../assets/LogoConsti.png'
-
+import logo from '../../../assets/mundo.jpg'
+import FileOpenIcon from '@mui/icons-material/FileOpen';
+import PlagiarismIcon from '@mui/icons-material/Plagiarism';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import AddToPhotosIcon from '@mui/icons-material/AddToPhotos';
 const Navbar = () => {
     const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -30,21 +32,23 @@ const Navbar = () => {
     // Definiendo enlaces
     const links = [
         { text: 'Home', path: '/app', icon: <HomeIcon /> },
-        { text: 'Articulos', path: '/articulos', icon: <AccessibilityNewIcon /> },
-        { text: 'G Solicitudes', path: '/g-solicitudes', icon: <AccessibilityNewIcon /> },
+        { text: 'Solicitudes', path: '/solicitudes', icon: <FileOpenIcon /> },
+        { text: 'Carga Articulos', path: '/articulos', icon: <AddToPhotosIcon /> },
+        { text: 'Inventario', path: '/inventario', icon: <PlagiarismIcon /> },
+        { text: 'Entregas', path: '/entregas', icon: <ShoppingCartIcon /> },
         { text: 'Salir', path: '/', icon: <LogoutIcon /> },
     ];
 
     return (
         <>
-            <AppBar position="fixed" sx={{ backgroundColor: "#000", zIndex: '1000000000' }}>
+            <AppBar position="fixed" sx={{ backgroundColor: "#F1EFEC", zIndex: '1000000000' }}>
                 <Toolbar>
                     <Typography variant="h6" style={{ flexGrow: 1 }}>
                         {/* Mi Aplicación */}
-                        <img src={logo}/>
+                        <img src={logo} style={{ width:'12rem'}}/>
                     </Typography>
                     {/* Icono del menú hamburguesa que aparece en pantallas pequeñas */}
-                    <IconButton edge="end" color="inherit" aria-label="menu" onClick={toggleDrawer(true)}>
+                    <IconButton edge="end" aria-label="menu" onClick={toggleDrawer(true)}>
                         <MenuIcon />
                     </IconButton>
                 </Toolbar>

@@ -4,6 +4,7 @@ import Solicitudes from '../auth/pages/Solicitudes';
 import { AppRoutes } from '../services/routes/AppRoutes';
 import { useContext, useEffect } from 'react';
 import { UserContext } from '../context/user.context';
+import DashboardEmpleado from '../auth/pages/DashboardEmpleado';
 
 export const AuthRouter = () => {
   const { user, employeeId } = useContext(UserContext);
@@ -34,7 +35,8 @@ export const AuthRouter = () => {
   return (
     <Routes>
       <Route path="/" element={<Login />} />
-      <Route path="/solicitudes" element={<ProtectedRoute element={<Solicitudes />} />} />
+      <Route path="/empleado" element={<ProtectedRoute element={<DashboardEmpleado/>} />} />
+      <Route path="/empleado/solicitudes" element={<ProtectedRoute element={<Solicitudes />} />} />
       <Route path="/*" element={<ProtectedRoute element={<AppRoutes />} />} />
     </Routes>
   );

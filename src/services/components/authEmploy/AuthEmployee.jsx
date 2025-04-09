@@ -18,7 +18,7 @@ const AuthEmployee = () => {
 
     try {
         await employees(userId);
-        navigate('/solicitudes'); // Llama al método de login
+        navigate('/empleado'); // Llama al método de login
         // navigate('/app'); // Redirigir después de un inicio de sesión exitoso
     } catch (error) {
         setErrorMessage(error.message); // Maneja el error si se lanza
@@ -69,7 +69,21 @@ const AuthEmployee = () => {
             </Grid>
             
             <Grid item xs={12} mt={2}>
-              <Button type="submit" fullWidth variant="contained" color="primary">LOGIN</Button>
+              <Button 
+                type="submit" 
+                fullWidth 
+                variant="contained" 
+                color="primary"
+                sx={{
+                  background: "#506C9A",
+                  "&:hover": {
+                              background: "#425a85",
+                              transform: "scale(1.05)",
+                          },
+                }}
+              >
+                LOGIN
+              </Button>
             </Grid>
 
             {/* Si deseas ver mensajes de error, puedes descomentar esto */}

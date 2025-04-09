@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import LoginForm from '../../services/components/login/LoginForm';
-import logo from '../../assets/logo_sin_fondo.png';
+import logo from '../../assets/img.jpg';
 import { Box, Switch, Typography } from '@mui/material';
 import AuthEmployee from '../../services/components/authEmploy/AuthEmployee';
 
@@ -15,10 +15,13 @@ const Login = () => {
 
   return (
     <>
-      <h1 style={{ textAlign: 'center', fontSize: '4rem' }}>Almacen Digital</h1>
+    <Typography component="h1" style={{ textAlign: 'center', fontSize: '4rem' }} color="black" mb={2}>
+      Almacen Digital
+    </Typography>
+      {/* <h1 style={{ textAlign: 'center', fontSize: '4rem' }}>Almacen Digital</h1> */}
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <Typography variant="h6" style={{ marginRight: '10px' }}>
-          {validator ? 'Crear solicitud' : 'Ingresar a la app'}
+          {validator ? 'Crear Solicitud como Empleado' : 'Ingresar como Gestor del Almacen'}
         </Typography>
         <Switch {...label} checked={validator} onChange={handleSwitchChange} />
       </div>

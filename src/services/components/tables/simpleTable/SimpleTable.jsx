@@ -24,7 +24,7 @@ const ReusableTable = ({ title, columns, tableData, onRowSelect }) => {
   };
 
   return (
-    <Grid item xs={12} md={12}>
+    <Grid item xs={12} md={12} marginTop={3}>
       <Card>
         {title && (
           <CardContent>
@@ -45,28 +45,31 @@ const ReusableTable = ({ title, columns, tableData, onRowSelect }) => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {tableData.map((row, index) => (
-                <TableRow
-                  key={index}
-                  onClick={() => handleRowClick(row)} // Selección de fila
-                  onMouseEnter={() => setHoveredRow(row)} // Activar hover
-                  onMouseLeave={() => setHoveredRow(null)} // Desactivar hover
-                  style={{
-                    cursor: 'pointer',
-                    backgroundColor:
-                      row === selectedRow
-                        ? '#e0e0e0ee' // Color de fondo de la fila seleccionada
-                        : row === hoveredRow
-                        ? '#f5f5f5' // Color de fondo cuando está en hover
-                        : 'inherit',
-                  }}
-                >
-                  {columns.map((col) => (
-                    <TableCell key={col.field}>{row[col.field]}</TableCell>
-                  ))}
-                </TableRow>
-              ))}
-            </TableBody>
+  {tableData.map((row, index) => (
+    <TableRow
+      key={index}
+      onClick={() => handleRowClick(row)}
+      onMouseEnter={() => setHoveredRow(row)}
+      onMouseLeave={() => setHoveredRow(null)}
+      style={{
+        cursor: 'pointer',
+        backgroundColor:
+          row === selectedRow
+            ? '#e0e0e0ee'
+            : row === hoveredRow
+            ? '#f5f5f5'
+            : 'inherit',
+      }}
+    >
+      {columns.map((col) => (
+        <TableCell key={col.field}>
+          {col.renderCell ? col.renderCell({ value: row[col.field], row }) : row[col.field]}
+        </TableCell>
+      ))}
+    </TableRow>
+  ))}
+</TableBody>
+
           </Table>
         </TableContainer>
       </Card>

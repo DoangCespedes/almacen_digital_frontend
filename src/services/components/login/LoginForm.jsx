@@ -45,13 +45,13 @@ export default function LoginForm() {
             justifyContent: 'center',
             mb: 3,
           }}>
-            {/* Aquí puedes añadir tu ícono SVG si lo deseas */}
+            
           </Box>
         </Grid>
 
         <Grid item>
           <Typography component="h1" variant="h5" color="black" mb={2}>
-            Ingresar
+            Ingresar como Gestor del Almacen
           </Typography>
         </Grid>
 
@@ -107,7 +107,18 @@ export default function LoginForm() {
           </Grid>
 
           <Grid item xs={12} mt={2}>
-            <Button type="submit" fullWidth variant="contained" color="primary">LOGIN</Button>
+            <Button 
+              type="submit" 
+              fullWidth 
+              variant="contained" 
+              sx={{
+                background: "#506C9A",
+                "&:hover": {
+                            background: "#425a85",
+                            transform: "scale(1.05)",
+                        },
+              }}
+            >LOGIN</Button>
           </Grid>
 
           {/* Si deseas ver mensajes de error, puedes descomentar esto */}
