@@ -25,11 +25,9 @@ import { useNavigate } from 'react-router-dom';
 
 const FormSolicitudes = () => {
   const { employeeId, userDetails } = useContext(UserContext);
-
   const [articles, setArticles] = useState([]);
   const [orders, setOrders] = useState([]);
   const today = new Date().toISOString().split('T')[0];
-
   const navigate = useNavigate();
 
   const {
@@ -65,26 +63,46 @@ const FormSolicitudes = () => {
 
   const addOrder = (data) => {
     const selectedArticle = articles.find(article => article.store_id === data.itemCode);
+
+    // Validación de cantidad
+    if (data.quantity < 1) {
+      setDialogMessage('La cantidad debe ser al menos 1.');
+      setDialogOpen(true);
+      return; // Salir de la función si la cantidad es inválida
+    }
+
+    // Validación de stock
+    if (selectedArticle && selectedArticle.CANTSTOCK < data.quantity) {
+      setDialogMessage('Cantidad solicitada supera el stock disponible.');
+      setDialogOpen(true);
+      return; // Salir de la función si hay un problema
+    }
+
     if (selectedArticle) {
       const orderWithFullDetails = {
-        ...selectedArticle, 
-        quantity: data.quantity 
+        ...selectedArticle,
+        quantity: data.quantity
       };
       setOrders((prevOrders) => [...prevOrders, orderWithFullDetails]);
       setDialogMessage('Orden agregada correctamente.');
-      setDialogOpen(true); 
+      setDialogOpen(true);
     }
-  
-    // Restablece los valores del formulario, incluyendo el select
+
+    // Restablece los valores del formulario
     reset({ itemCode: '', quantity: '' });
   };
-  
 
   const removeOrder = (index) => {
     setOrders((prevOrders) => prevOrders.filter((_, i) => i !== index));
   };
 
   const onSubmit = async () => {
+    if (orders.length === 0) {
+      setDialogMessage('No hay órdenes para enviar.');
+      setDialogOpen(true);
+      return; // Salir si no hay órdenes
+    }
+
     const { building_id, company_id, department_id } = employeeId;
   
     const requestToInsert = {
@@ -143,7 +161,7 @@ const FormSolicitudes = () => {
   return (
     <Container maxWidth="sm" sx={{ mt: 5 }}>
       <h2>
-        <img src={logo} alt="logo"  style={{width:'19rem'}}/>
+        <img src={logo} alt="logo" style={{ width: '19rem' }} />
         Solicitud de Artículos
       </h2>
 
@@ -161,9 +179,13 @@ const FormSolicitudes = () => {
                 {...register('itemCode', { required: 'Seleccione un artículo' })}
                 error={!!errors.itemCode}
               >
-                {articles.map(({ store_id, NOMART }) => (
-                  <MenuItem key={store_id} value={store_id}>
-                    {NOMART}
+                {articles.map(({ store_id, NOMART, CANTSTOCK }) => (
+                  <MenuItem
+                    key={store_id}
+                    value={store_id}
+                    disabled={CANTSTOCK <= 0} // Desactivar si no hay stock
+                  >
+                    {NOMART} {CANTSTOCK <= 0 ? '(Sin stock)' : ''}
                   </MenuItem>
                 ))}
               </Select>
@@ -185,26 +207,25 @@ const FormSolicitudes = () => {
           </Grid>
 
           <Grid item xs={12}>
-          <Button
-            type="submit"
-            variant="contained"
-            fullWidth
-            sx={{
-              
-              background: "#506C9A",
-              color: 'white',
-              borderRadius: '8px',
-              fontWeight: 'bold',
-              padding: '10px 15px',
-              "&:hover": {
-                            background: "#425a85",
-                            transform: "scale(1.05)",
-                        },
-              boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
-            }}
-          >
-            Agregar Orden
-          </Button>
+            <Button
+              type="submit"
+              variant="contained"
+              fullWidth
+              sx={{
+                background: "#506C9A",
+                color: 'white',
+                borderRadius: '8px',
+                fontWeight: 'bold',
+                padding: '10px 15px',
+                "&:hover": {
+                  background: "#425a85",
+                  transform: "scale(1.05)",
+                },
+                boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
+              }}
+            >
+              Agregar Orden
+            </Button>
           </Grid>
         </Grid>
       </form>
@@ -236,7 +257,6 @@ const FormSolicitudes = () => {
             fullWidth
             onClick={onSubmit}
             sx={{
-              
               background: "#506C9A",
               color: 'white',
               borderRadius: '8px',
@@ -244,9 +264,9 @@ const FormSolicitudes = () => {
               padding: '10px 15px',
               marginBottom: '2rem',
               "&:hover": {
-                            background: "#425a85",
-                            transform: "scale(1.05)",
-                        },
+                background: "#425a85",
+                transform: "scale(1.05)",
+              },
               boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
             }}
           >

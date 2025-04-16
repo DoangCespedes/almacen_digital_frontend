@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { format } from 'date-fns';
 import axios from 'axios';
 import {
@@ -16,15 +16,12 @@ import {
   TextField,
   Select,
   MenuItem,
+  Snackbar,
 } from '@mui/material';
 import { UserContext } from '../../../../context/user.context';
 
 const DialogFormTable = ({ open, onClose, orderSelected, rowSelected }) => {
-
-
   const { user } = useContext(UserContext);
-
-
   const [formData, setFormData] = React.useState(() => {
     return orderSelected.reduce((acc, order) => {
       acc[`CANT_${order.order_id}`] = order.CANT || '';
@@ -44,9 +41,35 @@ const DialogFormTable = ({ open, onClose, orderSelected, rowSelected }) => {
     { value: 'REJECTED', label: 'Rechazado' },
   ];
 
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackMessage, setSnackMessage] = useState('');
+  const [stockDialogOpen, setStockDialogOpen] = useState(false);
+  const [stockMessage, setStockMessage] = useState('');
+
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormData({ ...formData, [name]: value });
+  };
+
+  const handleCheckStock = async (order) => {
+    const { NOMART, store_id, CANT } = order;
+    try {
+      const response = await axios.get('http://localhost:3030/api/store', {
+        params: {
+          store_id,
+          NOMART,
+        },
+      });
+      const stockData = response.data[0]; // Asumiendo que la API devuelve un array de resultados
+      let availableStock = stockData ? stockData.CANTSTOCK : 0;
+      const message = `Stock para ${NOMART}: ${availableStock} disponibles. Se solicitaron: ${CANT}.`;
+      setStockMessage(message);
+      setStockDialogOpen(true); // Abre el dialog con la información de stock
+    } catch (error) {
+      console.error('Error al consultar stock:', error);
+      setSnackMessage('Error al consultar stock.');
+      setSnackbarOpen(true);
+    }
   };
 
   const handleSubmit = async () => {
@@ -65,12 +88,12 @@ const DialogFormTable = ({ open, onClose, orderSelected, rowSelected }) => {
       }
       return [];
     });
-  
+
     if (deliveriesToSubmit.length === 0) {
       alert('No hay entregas con estado DELIVERED');
       return;
     }
-  
+
     try {
       const response = await axios.post('http://localhost:3030/api/requests/deliveries', deliveriesToSubmit);
       console.log('Entregas registradas:', response.data);
@@ -80,7 +103,10 @@ const DialogFormTable = ({ open, onClose, orderSelected, rowSelected }) => {
       alert('Error al enviar entregas');
     }
   };
-  
+
+  const handleCloseStockDialog = () => {
+    setStockDialogOpen(false); // Cierra el diálogo de stock
+  };
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="lg" style={{ marginTop: '3rem' }}>
@@ -97,6 +123,7 @@ const DialogFormTable = ({ open, onClose, orderSelected, rowSelected }) => {
                 <TableCell sx={{ color: '#fff' }}>Estado</TableCell>
                 <TableCell sx={{ color: '#fff' }}>Unidad</TableCell>
                 <TableCell sx={{ color: '#fff' }}>Usuario</TableCell>
+                <TableCell sx={{ color: '#fff' }}>Consulta Stock</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -111,9 +138,7 @@ const DialogFormTable = ({ open, onClose, orderSelected, rowSelected }) => {
                       size="small"
                     />
                   </TableCell>
-                  <TableCell>
-                    {formData[`FECREG_${order.order_id}`]}
-                  </TableCell>
+                  <TableCell>{formData[`FECREG_${order.order_id}`]}</TableCell>
                   <TableCell>{order.NOMART}</TableCell>
                   <TableCell>
                     <Select
@@ -131,6 +156,14 @@ const DialogFormTable = ({ open, onClose, orderSelected, rowSelected }) => {
                   </TableCell>
                   <TableCell>{order.UNIDADMED}</TableCell>
                   <TableCell>{order.USRREG}</TableCell>
+                  <TableCell>
+                    <Button
+                      color="primary"
+                      onClick={() => handleCheckStock(order)}
+                    >
+                      Consultar Stock
+                    </Button>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -141,6 +174,25 @@ const DialogFormTable = ({ open, onClose, orderSelected, rowSelected }) => {
         <Button onClick={onClose} color="primary">Cancelar</Button>
         <Button onClick={handleSubmit} color="primary">Enviar</Button>
       </DialogActions>
+
+      {/* Snackbar para mostrar mensajes */}
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={() => setSnackbarOpen(false)}
+        message={snackMessage}
+      />
+
+      {/* Diálogo para mostrar la información de stock */}
+      <Dialog open={stockDialogOpen} onClose={handleCloseStockDialog}>
+        <DialogTitle>Consulta de Stock</DialogTitle>
+        <DialogContent>
+          <p>{stockMessage}</p>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseStockDialog} color="primary">Cerrar</Button>
+        </DialogActions>
+      </Dialog>
     </Dialog>
   );
 };

@@ -11,10 +11,13 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
+import TablePagination from '@mui/material/TablePagination';
 
 const ReusableTable = ({ title, columns, tableData, onRowSelect }) => {
   const [selectedRow, setSelectedRow] = useState(null);
   const [hoveredRow, setHoveredRow] = useState(null); 
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5); // Puedes cambiar a 10 si prefieres.
 
   const handleRowClick = (row) => {
     setSelectedRow(row);
@@ -22,6 +25,17 @@ const ReusableTable = ({ title, columns, tableData, onRowSelect }) => {
       onRowSelect(row);
     }
   };
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0); // Regresar a la primera página al cambiar el número de filas por página.
+  };
+
+  const paginatedData = tableData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   return (
     <Grid item xs={12} md={12} marginTop={3}>
@@ -45,33 +59,41 @@ const ReusableTable = ({ title, columns, tableData, onRowSelect }) => {
               </TableRow>
             </TableHead>
             <TableBody>
-  {tableData.map((row, index) => (
-    <TableRow
-      key={index}
-      onClick={() => handleRowClick(row)}
-      onMouseEnter={() => setHoveredRow(row)}
-      onMouseLeave={() => setHoveredRow(null)}
-      style={{
-        cursor: 'pointer',
-        backgroundColor:
-          row === selectedRow
-            ? '#e0e0e0ee'
-            : row === hoveredRow
-            ? '#f5f5f5'
-            : 'inherit',
-      }}
-    >
-      {columns.map((col) => (
-        <TableCell key={col.field}>
-          {col.renderCell ? col.renderCell({ value: row[col.field], row }) : row[col.field]}
-        </TableCell>
-      ))}
-    </TableRow>
-  ))}
-</TableBody>
-
+              {paginatedData.map((row, index) => (
+                <TableRow
+                  key={index}
+                  onClick={() => handleRowClick(row)}
+                  onMouseEnter={() => setHoveredRow(row)}
+                  onMouseLeave={() => setHoveredRow(null)}
+                  style={{
+                    cursor: 'pointer',
+                    backgroundColor:
+                      row === selectedRow
+                        ? '#e0e0e0ee'
+                        : row === hoveredRow
+                        ? '#f5f5f5'
+                        : 'inherit',
+                  }}
+                >
+                  {columns.map((col) => (
+                    <TableCell key={col.field}>
+                      {col.renderCell ? col.renderCell({ value: row[col.field], row }) : row[col.field]}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))}
+            </TableBody>
           </Table>
         </TableContainer>
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 25]}
+          component="div"
+          count={tableData.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
       </Card>
     </Grid>
   );
